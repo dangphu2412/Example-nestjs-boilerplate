@@ -1,0 +1,46 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "declaration": true,
+        "removeComments": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "es2017",
+        "sourceMap": true,
+        "outDir": "./dist",
+        "baseUrl": "./",
+        "incremental": true,
+        "allowJs": false,
+        "strict": true,
+        "strictNullChecks": false,
+        "noUnusedLocals": false,
+        "importHelpers": true,
+        "noLib": false,
+        "paths": {
+            "@packages/*": [
+                "./src/packages/*",
+            ],
+            "@database/*": [
+                "src/database/*"
+            ],
+            "@config/*": [
+                "src/config/*"
+            ],
+            "@base/*": [
+                "src/base/*"
+            ],
+            "@common/*": [
+                "src/common/*"
+            ],
+            "@env": [
+                "src/env"
+            ]
+        }
+    },
+    "exclude": [
+        "../node_modules",
+        "./**/*.spec.ts",
+        "ormconfig.ts"
+    ]
+}

@@ -1,0 +1,35 @@
+version: 2.1
+
+jobs:
+  install_packages:
+    docker:
+      - image: cimg/node:12.18-browsers
+    steps:
+      - checkout
+      - run:
+          name: Install packages
+          command: npm install
+      - save_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+  deploy:
+    machine:
+      enabled: true
+    steps:
+      - checkout
+      - run:
+          name: Deploy Over SSH
+          command:
+            ssh $SSH_USER@$SSH_HOST "cd /home/{{DIR}} && echo Success access && git pull && npm run build && npm run schema:sync && pm2 update"
+
+workflows:
+  test_my_app:
+    jobs:
+      - install_packages
+      - deploy:
+          requires:
+            - install_packages
+          filters:
+            branches:
+              only: master # only deploy on the master branch
