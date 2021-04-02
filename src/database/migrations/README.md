@@ -1,0 +1,3 @@
+# Migration documentation
+## Datatype:
+- Int

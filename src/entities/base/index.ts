@@ -11,18 +11,18 @@ import {ApiProperty} from '@nestjs/swagger';
  */
 export abstract class EntityTemplate extends BaseEntity {
     @ApiProperty({readOnly: true})
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({name: 'id'})
     public id: number;
 
     @ApiProperty({readOnly: true})
-    @CreateDateColumn()
-    public createdAt: Date;
+    @CreateDateColumn({name: 'createdDate'})
+    public createdDate: Date;
 
     @ApiProperty({readOnly: true})
-    @UpdateDateColumn()
-    public updatedAt: Date;
+    @UpdateDateColumn({name: 'updatedDate'})
+    public updatedDate: Date;
 
     @ApiProperty({readOnly: true})
-    @DeleteDateColumn({nullable: true})
-    public deletedAt: Date;
+    @DeleteDateColumn({name: 'deletedDate', nullable: true})
+    public deletedDate: Date;
 }

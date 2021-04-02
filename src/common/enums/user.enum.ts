@@ -1,0 +1,5 @@
+export enum USER_STATUS {
+  ACTIVE,
+  BANNED,
+  NO_WRITABLE
+}
