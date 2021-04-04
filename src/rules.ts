@@ -1,60 +1,37 @@
-export interface BeforeEffect {
-  method: string,
-  args: string[]
-}
-
-export interface Permission {
-      beforeCreate?: BeforeEffect,
-      beforeUpdate?: BeforeEffect
-}
-
-export interface Role {
-    name: string,
-    priority: PRIORITY,
-    permissions: string[]
-}
+import {PermissionData, RuleData, RoleWithPriority} from '@packages/ufsaModel/types/RulesType';
 
 export enum PRIORITY {
-  LOW,
-  MED,
-  HIGH
+    LOW,
+    MED,
+    HIGH
 }
 
-export const PERMISSION: Record<string, Permission> = {
+export const Rules: PermissionData<RuleData> = {
     UPDATE_PUBLIC_TASK: {
-        beforeUpdate: {
-            method: 'userService.requiredHigherPermissionThanAuthor',
-            args: ['UserDetail', 'TaskData']
-        }
+        method: 'RoleService.isRoleAdmin',
+        args: []
     },
     UPDATE_SELF_TASK: {
-        beforeUpdate: {
-            method: 'userService.mustBeTaskAuthor',
-            args: ['UserDetail', 'TaskData']
-        }
+        method: 'userService.mustBeTaskAuthor',
+        args: ['UserDetail', 'TaskData']
     },
     REPORT_SPAM_TASK: {
-        beforeUpdate: {
-            method: 'taskService.isTaskPersisting',
-            args: ['TaskData']
-        }
+        method: 'taskService.isTaskPersisting',
+        args: ['TaskData']
     }
 }
 
-export const ROLE: Record<string, Role> = {
+export const ROLE: Record<string, RoleWithPriority> = {
     LEADER: {
         priority: PRIORITY.HIGH,
-        name: 'leader',
         permissions: ['UPDATE_PUBLIC_TASK']
     },
     STAFF: {
         priority: PRIORITY.MED,
-        name: 'staff',
         permissions: ['UPDATE_SELF_TASK']
     },
     SUPPORTER: {
         priority: PRIORITY.MED,
-        name: 'supporter',
         permissions: ['UPDATE_SELF_TASK', 'REPORT_SPAM_TASK']
     }
 }

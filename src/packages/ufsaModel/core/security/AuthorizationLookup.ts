@@ -1,53 +1,41 @@
 import {INestApplication, Logger} from '@nestjs/common';
-import {UnauthorizedException} from '@common/exceptions';
+import {UserDetail} from '@packages/ufsaModel/core/user/UserDetail';
+import {PermissionData, RuleData} from '@packages/ufsaModel/types/RulesType';
+import {RuleValidator} from '@packages/ufsaModel/core/rule/RuleValidator';
 
-export class AuthorizationLookup {
-  static logger: Logger = new Logger(AuthorizationLookup.name);
+export class AuthorizationContainer<T extends RuleData> {
+  static logger: Logger = new Logger(AuthorizationContainer.name);
 
-  static DIisReady = false;
+  private getInstanceFromDI: any = null;
 
-  static getInstanceFromDI: any = null;
+  private rules: PermissionData<T>;
 
-  static queue: any[] = [];
-
-  static triggerPreAuth(containerName: string, methodName: string) {
-      AuthorizationLookup.logger.log(
-          `Collecting ${containerName} with method to Authorization DI`
-      );
-      AuthorizationLookup.queue.push(
-          {
-              container: containerName,
-              method: methodName
-          }
-      );
-  }
-
-  static async eventLoop() {
-      while(AuthorizationLookup.DIisReady) {
-          if (AuthorizationLookup.queue.length > 0) {
-              const instanceQueue = AuthorizationLookup.queue.pop();
-              const task =
-                AuthorizationLookup
-                    .getInstanceFromDI(
-                        instanceQueue.container
-                    )[instanceQueue.method];
-              const data = await task(1, 2);
-              throw new UnauthorizedException();
-          } else {
-              console.log('===== Looping for auth ====');
-          }
-      }
+  /*
+  PreAuthorize have this permission
+  Then access rule in that permission
+   */
+  buildAuthValidator(user: UserDetail) {
+      return new RuleValidator()
+          .applyUserDetail(user)
+          .applyGetDI(this.getInstanceFromDI)
+          .applyRules(this.rules);
   }
 
   static builder() {
-      AuthorizationLookup.logger.log('Bundling Authorization Ufsa model');
-      return new AuthorizationLookup();
+      AuthorizationContainer.logger.log('Bundling Authorization Ufsa model');
+      return new AuthorizationContainer();
+  }
+
+  applyRules(rules: PermissionData<T>) {
+      this.rules = rules;
+      return this;
   }
 
   applyAppContext(app: INestApplication) {
-      AuthorizationLookup.getInstanceFromDI = app.get;
-      AuthorizationLookup
+      this.getInstanceFromDI = app.get;
+      AuthorizationContainer
           .logger.log('Append method get DI from NestApplication');
       return this;
   }
+
 }

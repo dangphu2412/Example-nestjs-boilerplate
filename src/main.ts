@@ -2,6 +2,9 @@ import {NestFactory} from '@nestjs/core';
 import {AppModule} from './app.module';
 import {BundleApp} from './config';
 import * as env from 'dotenv';
+import {AuthorizationContainer} from '@packages/ufsaModel/core/security/AuthorizationLookup';
+import {Rules} from './rules';
+import { authorizationContainer } from '@config/authorizationContainer';
 
 env.config();
 
@@ -18,5 +21,8 @@ env.config();
         .applyAppContext(app)
         .buildDefault()
         .listenApp();
+
+    authorizationContainer
+        .applyAppContext(app);
 }) ()
 

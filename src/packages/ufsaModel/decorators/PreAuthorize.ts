@@ -4,8 +4,8 @@ import {UserCustomRules} from '@packages/ufsaModel/core/user/UserCustomRules';
 import {ForbiddenException} from '@common/exceptions';
 
 export const PreAuthorize = (
-    roleRequired: string,
-    permissionRequired?: string,
+    permissionRequired: string,
+    roleRequired?: string,
     customRuleRequired?: string
 ): MethodDecorator => {
     return (
@@ -21,23 +21,36 @@ export const PreAuthorize = (
             let isPermissionPermitted = true;
             const isCustomRulePermitted = true;
 
+            if (!userDetail) {
+                throw new ForbiddenException();
+            }
+
             if (!(userDetail instanceof UserDetail)) {
                 throw new InvalidArgumentResource(propertyKey);
             }
 
-
-            if (Array.isArray(userDetail.roles)) {
-                isRolePermitted = userDetail.roles.some(
-                    role => role === roleRequired
-                );
-            }
-
-            if (Array.isArray(userDetail.permissions)) {
+            if (userDetail.permissions) {
                 isPermissionPermitted = userDetail.permissions[permissionRequired]
+            } else {
+                throw new ForbiddenException();
             }
 
-            if ((userDetail instanceof UserCustomRules) && Array.isArray(userDetail)) {
-                isPermissionPermitted = userDetail.customRules[customRuleRequired]
+            if (roleRequired) {
+                if (Array.isArray(userDetail.roles)) {
+                    isRolePermitted = userDetail.roles.some(
+                        role => role === roleRequired
+                    );
+                } else {
+                    throw new ForbiddenException();
+                }
+            }
+
+            if (customRuleRequired) {
+                if ((userDetail instanceof UserCustomRules) && Array.isArray(userDetail)) {
+                    isPermissionPermitted = userDetail.customRules[customRuleRequired]
+                } else {
+                    throw new ForbiddenException();
+                }
             }
 
             if (!isRolePermitted

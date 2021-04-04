@@ -27,6 +27,7 @@ export class UserDetail implements UserPrinciple {
             racl.forEach((item: RoleAccessControlList | string) => {
                 if (typeof item === 'string') {
                     this.roles.push(item);
+                    this.appendPermission(user.permissions);
                 } else {
                     this.roles.push(item.name);
                     this.appendPermission(item.permissions);

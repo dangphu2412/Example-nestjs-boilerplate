@@ -9,4 +9,8 @@ export class RoleService {
         @InjectRepository(Role)
         private moduleRepository: RoleRepository,
     ) { }
+
+    public isRoleAdmin(a: any, b: any) {
+        return this.moduleRepository.find();
+    }
 }

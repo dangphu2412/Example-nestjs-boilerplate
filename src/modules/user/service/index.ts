@@ -12,6 +12,7 @@ import {sign} from 'jsonwebtoken';
 import {toJwtPayload} from '../mapper/JwtPayload';
 import {PreAuthorize} from '@packages/ufsaModel/decorators/PreAuthorize';
 import {CustomUserDetail} from '../dto/CustomUserDetail';
+import {authorizationContainer} from '@config/authorizationContainer';
 
 @Injectable()
 export class UserService {
@@ -26,8 +27,12 @@ export class UserService {
         this.bcryptService = BcryptSingleton;
     }
 
-    @PreAuthorize('Stokes')
-    public findAll(authContext: CustomUserDetail, request: QueryContainer) {
+    @PreAuthorize('UPDATE_PUBLIC_TASK')
+    public async findAll(authContext: CustomUserDetail, request: QueryContainer) {
+        await authorizationContainer
+            .buildAuthValidator(authContext)
+            .addRule('UPDATE_PUBLIC_TASK', [1, 2])
+            .validate();
         return this.moduleRepository.findAll(request);
     }
 

@@ -25,7 +25,7 @@ export class initAccountUsers1617356417225 implements MigrationInterface {
             .manager
             .save(User, leaderData);
 
-        leaderEntity.roles = [roles.find(role => role.name === ROLE['LEADER'].name)];
+        leaderEntity.roles = [roles.find(role => role.name === 'LEADER')];
 
         await queryRunner.manager.save(User, leaderEntity);
     }
